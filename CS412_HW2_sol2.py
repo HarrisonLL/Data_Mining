@@ -8,10 +8,10 @@ while True:
 
 ##variable declaration
 min_sup = 2
-      
-    
-    
-    
+
+##function: candidate_generation
+##          generating candidates by moving one word ahead from original dictionary
+##          return a new dictionary       
 def candidate_generation(the_dict) :
     candidates = {}
     for k,v in the_dict.items() :
