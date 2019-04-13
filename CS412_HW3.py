@@ -31,7 +31,7 @@ num_atts = len(train_data[0])-1
 # print(num_train)
 # print(num_label)
 
-#######################decision tree#########################
+####################### Decision Tree #########################
 
 class Node:
 
@@ -48,7 +48,7 @@ class Node:
         return (1+max(self.depth(root.left), self.depth(root.right)))
     
     
-    # Print the tree IN ORDER TRAVERSAL
+    # Print the tree by IN ORDER TRAVERSAL
     
     def PrintTree(self):
         if self.left:
@@ -157,7 +157,7 @@ build_DT(root)
 #root.PrintTree()
     
 
-def test(node, test_data) :
+def DT_predict(node, test_data) :
     predicted_labels = []
     
     for k,v in test_data.items() :
@@ -172,6 +172,39 @@ def test(node, test_data) :
         predicted_labels.append(label)
     return predicted_labels
 
-predicted_labels = test(root, test_data)
-print(predicted_labels)
+predicted_labels = DT_predict(root, test_data)
+for label_ in predicted_labels :
+    print(int(label_))
+print()
+######################## K-nearest-neightbor #############################
+
+
+k = 3
+def KNN(train, test) :
+    nearest_neighbor = {} ## key:index of train, value: distance
+    predicted_labels = []
+    for test_k, test_v in test.items() :
+        for train_k, train_v in train.items() :
+            distance = 0
+            for i in range(1, num_atts+1) :
+                test_value = float(test_v[i].split(":")[1])
+                train_value = float(train_v[i].split(":")[1])
+                distance += math.pow((test_value - train_value),2)
+            nearest_neighbor[train_k] = math.sqrt(distance)
+            
+        k_nearest_neighbor = sorted(nearest_neighbor.items(), key=lambda x:(x[1],x[0]))[0:k]
+        possible_labels = {} ## key: labels, value: votes
+        for item in k_nearest_neighbor:
+            label_ = train[item[0]][0]
+            if label_ not in possible_labels: possible_labels[label_] = 1
+            else : possible_labels[label_] += 1
+        predicted_label = sorted(possible_labels.items(), key=lambda x:(-x[1],x[0]))[0][0]
+        predicted_labels.append(predicted_label)
+    return predicted_labels
+
+predicted_labels = KNN(train_data, test_data)
+for label_ in predicted_labels :
+    print(int(label_))
+
+        
     
