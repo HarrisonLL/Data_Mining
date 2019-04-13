@@ -83,20 +83,21 @@ def get_gini(less_than_idx, greater_than_idx) :
         gini2 -=  (float(v/len(greater_than_idx)))**2
     # print(gini1 )
     # print(gini2)
+
     return (coef1*gini1 + coef2*gini2)
 
 
-def list_of_labels(dataset) :
-    labels = []
+def get_labels(dataset) :
+    labels = {} ##key : label value: vote
     for k,v in dataset.items() :
-        if v[0] not in labels :
-            labels.append(v[0])
+        if v[0] not in labels : labels[v[0]] = 1
+        else : labels[v[0]] += 1
     return labels 
 
 
 def build_DT(node) :
-    if node.depth == 2 or len(list_of_labels(node.dataset))==1: return node
-    
+    if node.depth == 2 or len(get_labels(node.dataset))==1: return node
+ 
     else :
         
         attribute_candidates = {}
@@ -118,16 +119,17 @@ def build_DT(node) :
                 values[k] = a
                 unique_values.append(a)
             unique_values = list(set(unique_values))
+            if len(unique_values) == 1 : continue
             j = 0
             while j+1 < len(unique_values):
                 split_ = float((unique_values[j]+unique_values[j+1])/2)
                 possible_splits.append(split_)
                 j += 1
- 
-            ## min_gin, best_split
+            
+            ## min_gin, threshold
             for split_ in possible_splits :
-                less_than_idx = [k for k,v in values.items() if v<split_]
-                greater_than_idx = [k for k,v in values.items() if v>=split_]
+                less_than_idx = [k for k,v in values.items() if v<=split_]
+                greater_than_idx = [k for k,v in values.items() if v>split_]
                 gini_ = get_gini(less_than_idx, greater_than_idx)
                 if gini_ < min_gini :
                     min_gini = gini_
@@ -135,7 +137,8 @@ def build_DT(node) :
                     best_left_idx = less_than_idx.copy()
                     best_right_idx = greater_than_idx.copy()
             attribute_candidates[i] = [min_gini, best_left_idx, best_right_idx, threshold]
-
+        # print(attribute_candidates)
+        # print()
         true_attr = sorted(attribute_candidates.items(), key=lambda x:(x[1][0],x[0]))[0][0]
         left_data = {idx: data[idx] for idx in attribute_candidates[true_attr][1] }
         right_data = {idx: data[idx] for idx in attribute_candidates[true_attr][2] }
@@ -168,7 +171,8 @@ def DT_predict(node, test_data) :
             value = float(v[attr_idx].split(":")[1])
             if value < threshold : node = node.left
             else : node = node.right        
-        label = list_of_labels(node.dataset)[0]
+        labels = get_labels(node.dataset)
+        label = sorted(labels.items(), key=lambda x:(-x[1],x[0]))[0][0]
         predicted_labels.append(label)
     return predicted_labels
 
@@ -205,6 +209,3 @@ def KNN(train, test) :
 predicted_labels = KNN(train_data, test_data)
 for label_ in predicted_labels :
     print(int(label_))
-
-        
-    
