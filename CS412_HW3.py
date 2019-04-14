@@ -127,14 +127,14 @@ def build_DT(node) :
             if len(unique_values) == 1 : continue
             j = 0
             while j+1 < len(unique_values):
-                split_ = float((unique_values[j]+unique_values[j+1])/2)
+                split_ = float(unique_values[j]+unique_values[j+1])/2
                 possible_splits.append(split_)
                 j += 1
             
             ## min_gin, threshold
             for split_ in possible_splits :
-                less_than_idx = [k for k,v in values.items() if v<=split_]
-                greater_than_idx = [k for k,v in values.items() if v>split_]
+                less_than_idx = [k for k,v in values.items() if v< split_]
+                greater_than_idx = [k for k,v in values.items() if v>= split_]
                 gini_ = get_gini(less_than_idx, greater_than_idx)
                 if gini_ < min_gini :
                     min_gini = gini_
