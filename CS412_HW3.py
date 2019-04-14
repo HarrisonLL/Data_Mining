@@ -17,7 +17,7 @@ while True:
     except EOFError as error:
         break
 ######## fot testing #######
-# with open('./cs412_personal_git/test.txt','r') as f:
+# with open('./cs412_personal_git/HW3_test.txt','r') as f:
 #     for line in f:
 #         if (line.split(" ")[0] != "0"): 
 #             train_data[idx] = line.split(" ")
@@ -25,11 +25,6 @@ while True:
 #         else :
 #             test_data[idx-len(train_data)] = line.split(" ")
 #             idx += 1  
-
-
-
-
-
 
 
 temp0 = []
@@ -62,10 +57,8 @@ class Node:
     def get_tree_height(self, root) :
         if root == None: return -1
         return (1+max(self.get_tree_height(root.left), self.get_tree_height(root.right)))
-    
-    
+     
     # Print the tree by IN ORDER TRAVERSAL
-    
     def PrintTree(self):
         if self.left:
             self.left.PrintTree()
@@ -100,7 +93,6 @@ def get_gini(less_than_idx, greater_than_idx) :
 
     return (coef1*gini1 + coef2*gini2)
 
-
 def get_labels(dataset) :
     labels = {} ##key : label value: vote
     for k,v in dataset.items() :
@@ -108,17 +100,16 @@ def get_labels(dataset) :
         else : labels[v[0]] += 1
     return labels 
 
-
 def build_DT(node) :
     if node.depth == 2 or len(get_labels(node.dataset))==1: return node
  
     else :
-        
-        attribute_candidates = {}
-        data = node.dataset
         ##find best attribute w/ minimum gini
         ##for each attribute, find possible split 
         ##for each split, find the one w/ minimum gini
+        attribute_candidates = {}
+        data = node.dataset
+
         for i in range(1, num_atts+1) :
             values = {}
             unique_values = []
@@ -141,7 +132,6 @@ def build_DT(node) :
                 j += 1
             
             ## min_gin, threshold
-            
             for split_ in possible_splits :
                 less_than_idx = [k for k,v in values.items() if v<=split_]
                 greater_than_idx = [k for k,v in values.items() if v>split_]
@@ -165,10 +155,6 @@ def build_DT(node) :
         build_DT(left_node)
         build_DT(right_node)
         
-
-root = Node(train_data, 0)
-build_DT(root)  
-
 def DT_predict(node, test_data) :
     predicted_labels = []
     count = 0
@@ -186,6 +172,8 @@ def DT_predict(node, test_data) :
         node = root 
     return predicted_labels
 
+root = Node(train_data, 0)
+build_DT(root)  
 predicted_labels = DT_predict(root, test_data)
 for label_ in predicted_labels :
     print(int(label_))
