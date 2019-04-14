@@ -104,8 +104,8 @@ def build_DT(node) :
     if node.depth == 2 or len(get_labels(node.dataset))==1: return node
  
     else :
-        ##find best attribute w/ minimum gini
-        ##for each attribute, find possible split 
+        ##find best attribute and corresponding threshold w/ minimum gini
+        ##for each attribute, find all possible splits 
         ##for each split, find the one w/ minimum gini
         attribute_candidates = {}
         data = node.dataset
