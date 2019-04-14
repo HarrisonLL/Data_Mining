@@ -107,6 +107,7 @@ def build_DT(node) :
         ##find best attribute and corresponding threshold w/ minimum gini
         ##for each attribute, find all possible splits 
         ##for each split, find the one w/ minimum gini
+        ##then recursively build the tree 
         attribute_candidates = {}
         data = node.dataset
 
