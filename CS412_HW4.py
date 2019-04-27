@@ -57,12 +57,12 @@ def initialize_heap(dataset) :
         for j in range(i+1, len(dataset)) :
             dist = distance(dataset[i], dataset[j])
             hppush(heap_list, (dist, [i,j]))
-    print(heap_list)
+    #print(heap_list)
     return heap_list
 
 def hierarchical_clustering(dataset, N, K) :
     the_heap = initialize_heap(dataset)
-    print(the_heap)
+    #print(the_heap)
     clusters = []
     i = 0
     while i < (N-K) :
@@ -80,22 +80,34 @@ def hierarchical_clustering(dataset, N, K) :
             clusters.append([idx1, idx2])
         elif assigned_to_cluster[0] != -1 and assigned_to_cluster[1] == -1:
             clusters[assigned_to_cluster[0]].append(idx2)
-            sorted(clusters[assigned_to_cluster[0]])
         elif assigned_to_cluster[0] == -1 and assigned_to_cluster[1] != -1:
             clusters[assigned_to_cluster[1]].append(idx1)
-            sorted(clusters[assigned_to_cluster[1]])
         else:
             if assigned_to_cluster[0] == assigned_to_cluster[1] : i-=1
             else :
                 min_idx = min(assigned_to_cluster)
                 max_idx = max(assigned_to_cluster)
-                clusters[min_idx] = sorted(clusters[min_idx] + clusters[max_idx])
+                clusters[min_idx] = clusters[min_idx] + clusters[max_idx]
                 del clusters[max_idx]
-        i += 1
-    for i in range(len(clusters)) :
-        clusters[i] = sorted(clusters[i])
+        i += 1    
     return clusters
 
 clusters = hierarchical_clustering(dataset, N, K)
+labeled_clusters = {}
+for i in range(len(clusters)) :
+    label = min(clusters[i])
+    for idx in clusters[i] :
+        if label not in labeled_clusters.keys() :
+            labeled_clusters[label] = [idx]
+        else :
+            labeled_clusters[label].append(idx)
+        
 
+result = {}
+for k,v in labeled_clusters.items() :
+    for idx in v :
+        result[idx] = k
+
+for k,v in sorted(result.items()) :
+    print(v)
          
