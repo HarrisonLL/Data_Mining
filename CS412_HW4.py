@@ -1,113 +1,95 @@
-from heapq import heappush as hppush
-from heapq import heappop as hppop
 import math
-###get input
+
+##get input
+s = input().split()
+N = int(s[0])
+K = int(s[1])
 dataset = {}
-N = 0  ##numbers of data
-k = 0  ##numbers of clusters
-num_attr = 0
-lineidx = 0
-# while True:
-#     try:
-#         if lineidx == 0 :
-#             s = input().split(" ")
-#             N = int(s[0])
-#             K = int(s[1])
-#         else: 
-#             s = input().split(" ")
-#             temp_list = []
-#             for i in range(len(s)) :
-#                 if (s[i]) == "": break
-#                 value = float(s[i])
-#                 temp_list.append(value)  
-#             dataset[lineidx -1] = temp_list
-#         lineidx += 1
-#     except EOFError as error:
-#         break
-# num_attr = len(dataset[0])
+for i in range(N) :
+    k = str(i)
+    s = input().split()
+    dataset[k] = s
+    for j in range(len(s)) :
+        dataset[k][j] = float(dataset[k][j])
 
-######## fot local testing #######
-with open('./cs412_personal_git/HW4_test.txt','r') as f:
-    for line in f:
-        if lineidx == 0 :
-            s = line.split(" ")
-            N = int(s[0])
-            K = int(s[1])
-        else: 
-            s = line.split(" ")
-            temp_list = []
-            for i in range(len(s)) :
-                if (s[i]) == "": break
-                value = float(s[i])
-                temp_list.append(value)  
-            dataset[lineidx -1] = temp_list
-        lineidx += 1
-num_attr = len(dataset[0])
+def distance(data1, data2) :
+    sum = 0.0
+    for i in range(len(data1)) :
+        sum += (data1[i] - data2[i])**2
+    return math.sqrt(sum)
+    
 
+def initialize_dm(dataset) :
+    the_dict = {}
+    for i in range(N) :
+        for j in range(N) :
+            if i != j :
+                key1 = str(i)
+                key2 = str(j)
+                value = distance(dataset[key1], dataset[key2])
+                if key1 not in the_dict : the_dict[key1] = {}
+                the_dict[key1][key2] = value
+    return the_dict
 
-def distance(point1, point2) :
-    distance = 0.0
-    for i in range (len(point1)) :
-        distance += (point1[i]-point2[i])**2
-    return math.sqrt(distance)
+def update_dm(the_dict) :
+    
+    while len(the_dict) > K :
+        min_dist = math.inf
+        key1 = '0'
+        key2 = '0'
+        for k,v in the_dict.items():
+            for k2, v2 in v.items():
+                if v2 - min_dist < -1*10**-7 :
+                    key1 = k
+                    key2 = k2
+                    min_dist = v2
 
-def initialize_heap(dataset) :
-    heap_list = []
-    for i in range(len(dataset)) :
-        for j in range(i+1, len(dataset)) :
-            dist = distance(dataset[i], dataset[j])
-            hppush(heap_list, (dist, [i,j]))
-    #print(heap_list)
-    return heap_list
+                elif math.fabs(v2-min_dist) <= 10**-7 :
+                    temp0 = k.split()
+                    temp1 = k2.split()
+                    temp0.sort(key=float)
+                    temp1.sort(key=float)
+                    pair1 = [temp0[0], temp1[0]]
+                    pair1.sort(key=float)
+                    temp0 = key1.split()
+                    temp1 = key2.split()
+                    temp0.sort(key=float)
+                    temp1.sort(key=float)
+                    pair2 = [temp0[0], temp1[0]]
+                    pair2.sort(key=float)
+                    if pair1[0] < pair2[0] :
+                        key1 = k
+                        key2 = k2
+                    elif pair1[0] == pair2[0] and pair1[1] < pair2[1] :
+                        key1 = k
+                        key2 = k2
+        new_key = key1 + ' ' + key2
+        the_dict[new_key] = {}
+        for k,v in the_dict[key1].items() :
+            if k != key1 and k!= key2 :
+                v2 = the_dict[key2][k]
+                the_dict[new_key][k] = min(v,v2)
+        del(the_dict[key1])
+        del(the_dict[key2])
+        for k,v in the_dict.items() :
+            if k != new_key :
+                del(v[key1])
+                del(v[key2])
+                v[new_key] = the_dict[new_key][k]
+    return the_dict
 
-def hierarchical_clustering(dataset, N, K) :
-    the_heap = initialize_heap(dataset)
-    #print(the_heap)
-    clusters = []
-    i = 0
-    while i < (N-K) :
-        cur_dist, pair = hppop(the_heap)
-        idx1 = pair[0]
-        idx2 = pair[1]
-        ##assign to clusters
-        assigned_to_cluster = [-1, -1]
-        for j in range(len(clusters)) :
-            if assigned_to_cluster[0] != -1 and assigned_to_cluster[1] != -1: break
-            if idx1 in clusters[j] : assigned_to_cluster[0] = j
-            if idx2 in clusters[j] : assigned_to_cluster[1] = j
-
-        if assigned_to_cluster[0] == -1 and assigned_to_cluster[1] == -1:
-            clusters.append([idx1, idx2])
-        elif assigned_to_cluster[0] != -1 and assigned_to_cluster[1] == -1:
-            clusters[assigned_to_cluster[0]].append(idx2)
-        elif assigned_to_cluster[0] == -1 and assigned_to_cluster[1] != -1:
-            clusters[assigned_to_cluster[1]].append(idx1)
-        else:
-            if assigned_to_cluster[0] == assigned_to_cluster[1] : i-=1
-            else :
-                min_idx = min(assigned_to_cluster)
-                max_idx = max(assigned_to_cluster)
-                clusters[min_idx] = clusters[min_idx] + clusters[max_idx]
-                del clusters[max_idx]
-        i += 1    
-    return clusters
-
-clusters = hierarchical_clustering(dataset, N, K)
-labeled_clusters = {}
-for i in range(len(clusters)) :
-    label = min(clusters[i])
-    for idx in clusters[i] :
-        if label not in labeled_clusters.keys() :
-            labeled_clusters[label] = [idx]
-        else :
-            labeled_clusters[label].append(idx)
-        
-
-result = {}
-for k,v in labeled_clusters.items() :
-    for idx in v :
-        result[idx] = k
-
-for k,v in sorted(result.items()) :
-    print(v)
-         
+the_dict = initialize_dm(dataset)
+result = update_dm(the_dict)
+# print(result)
+# print()
+cluster = {}
+for k,v in the_dict.items() :
+    key_list = k.split()
+    key_list.sort(key=float)
+    for i in range(len(key_list)) :
+        cluster[key_list[i]] = key_list[0]
+# print(cluster)
+keys = list(cluster.keys())
+keys.sort(key=float)
+for i in range(len(keys)):
+    print(cluster[keys[i]])
