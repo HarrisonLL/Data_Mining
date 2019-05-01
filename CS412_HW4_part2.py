@@ -5,71 +5,61 @@ import statistics as stats
 s = input().split()
 N = int(s[0])
 K = int(s[1])
-dim = 0
 dataset = {}
-cluster_center = {} ##key is cluster id, string; value is center coords
+cluster_center = []
+dim = 0
+
 for i in range(N) :
-    k = str(i)
     s = input().split()
-    dataset[k] = s
+    dataset[i] = s
     dim = len(s)
     for j in range(dim) :
-        dataset[k][j] = float(dataset[k][j])
-    if i < K :
-        cluster_center[k]= dataset[k]
+        dataset[i][j] = float(dataset[i][j])
+for i in range(K) :
+    s = input().split()
+    cluster_center.append(list(map(float, s)))
 
-               
+
 def distance(data1, data2) :
     sum = 0.0
     for i in range(len(data1)) :
         sum += (data1[i] - data2[i])**2
     return math.sqrt(sum)
 
-def update_center(new_key) :
+
+def update_center(assigned_labels, cluster_center):
     new_center = []
-    key = new_key.split()
-    for i in range(dim) :
-        temp1 = []
-        for j in range(len(key)) :
-            temp1.append(dataset[key[j]][i])
-        mean = stats.mean(temp1)
-        new_center.append(mean)
-    return new_center
-            
-    
-count = 0
-while count < len(dataset) :
-
-    for i in range(len(dataset)) :
-        dist_dict = {}
-        for k,v in cluster_center.items() :
-            dist = distance(dataset[str(i)], v)
-            dist_dict[k] = dist
-        assigned_label = sorted(dist_dict.items(), key=lambda x:(x[1], x[0]))[0][0]
-
-        if str(i) in assigned_label :   
-            count += 1
-            continue      
-        else :
-            count = 0
-            new_key = assigned_label + ' ' + str(i)
-            cluster_center[new_key] = cluster_center[assigned_label]
-            del cluster_center[assigned_label]
-            
-    for k,v in cluster_center.items():
-        new_v = update_center(k)
-        cluster_center[k] = new_v
-
-print(cluster_center)
-result = [-1]*N
-for key in cluster_center.keys() :
-    cluster = key.split()
-    label = min(cluster)
-    for k in cluster:
-        j = int(k)
-        result[j] = label
-for i in range(len(result)) :
-    print(result[i])
+    temp_set = set(sorted(assigned_labels))
+    for idx in temp_set:
+        temp_center = []
+        for j in range(dim) :
+            temp_sum = []
+            for k in range(len(assigned_labels)) :
+                if assigned_labels[k] == idx :
+                    temp_sum.append(dataset[k][j])
+            temp_mean = stats.mean(temp_sum)  
+            temp_center.append(temp_mean)
+        new_center.append(temp_center)
         
-                    
-    
+    return new_center
+
+
+labels = []
+while True :
+    assigned_labels = []
+    for i in range(len(dataset)) :
+        dists = {} ##key is idx of cc; value is distance
+        for j in range(len(cluster_center)) :
+            dist = distance(dataset[i], cluster_center[j])
+            dists[j] =[dist]
+        assigned_label = sorted(dists.items(), key=lambda x:(x[1], x[0]))[0][0]
+        assigned_labels.append(assigned_label)
+    ##check
+    if len(labels) != 0 and labels[len(labels)-1] == assigned_labels : break
+    labels.append(assigned_labels)
+    ##update center
+    cluster_center = update_center(assigned_labels, cluster_center)
+
+for i in range(len(labels[len(labels)-1])) :
+    print(labels[len(labels)-1][i])
+
