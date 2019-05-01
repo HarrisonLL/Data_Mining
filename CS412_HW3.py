@@ -1,5 +1,5 @@
 import math
-#import sys
+import sys
  
 ## dict: key is line index, value is "label attr0:value attr1:value.."
 train_data = {} 
