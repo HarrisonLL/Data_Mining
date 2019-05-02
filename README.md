@@ -4,5 +4,5 @@ methods, systems, implementations, and applications.
 This folder includes all programming assignments of this course.
 
 The first Two assignments are about pattern mining by using apriori algorithm and spade algorithm. 
-The Third assignments is about building decision tree and k-nearest neighbor.
-The Forth assignments is about basic clustering algorithm: agglomerative clustering and kmeans.  
+The Third assignment is about building decision tree and k-nearest neighbor.
+The Forth assignment is about basic clustering algorithm: agglomerative clustering and kmeans.  
