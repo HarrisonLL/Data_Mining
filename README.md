@@ -1,9 +1,8 @@
-This course is an introduction to data mining. Topic includes  Design and implementation 
-of data warehouse and on-line analytical processing (OLAP) systems; data mining concepts, 
-methods, systems, implementations, and applications. 
+This repositary contains materials from two course, intro to data mining (UIUC CS412) and data mining (Umich EECS476).
 
-This folder includes all programming assignments instruction and my solutions.
-- Assignment 1(Apriori algorithm) and 2(SPADE algorithm) focused on [Associate-Rule Learning](https://en.wikipedia.org/wiki/Association_rule_learning). 
+Four programming assignments (CS412) are included here as follows.
+- Assignment 1(Apriori algorithm) and 2(SPADE algorithm) focused on Associate-Rule Learning. 
 - Assignment 3 is Classifcation algorithm: Decision Tree and K-Nearest Neighbor.
 - Assignment 4 is Clustering algorithm: Agglomerative Clustering and Kmeans.
 
+One additional assignment (EECS476) is about implementing Hadoop and Apriori Algorithm in JAVA.
