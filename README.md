@@ -5,5 +5,5 @@ Four programming assignments (CS412) are included here as follows.
 - Assignment 3 is Classifcation algorithm: Decision Tree and K-Nearest Neighbor.
 - Assignment 4 is Clustering algorithm: Agglomerative Clustering and Kmeans.
 
-One additional assignment (EECS476) is about implementing Hadoop and Apriori Algorithm in JAVA.
+One additional assignment (EECS476) is about implementing Hadoop and Apriori Algorithm in JAVA. \
 The reason to write Apriori in Map Reduce is to make the algorithm working on large datasets.
